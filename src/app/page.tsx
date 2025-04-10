@@ -74,11 +74,6 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  // if (loading) {
-  //   // Show a loading spinner or placeholder while checking auth state
-  //   return <div>Loading...</div>;
-  // }
-
   useEffect(() => {
     let tasksRef: any;
     if (user) {
