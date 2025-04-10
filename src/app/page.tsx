@@ -58,18 +58,32 @@ export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [aiPrioritizedTasks, setAiPrioritizedTasks] = useState<PrioritizeTasksOutput | null>(null);
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [tasksLoading, setTasksLoading] = useState(false); // Loading state for tasks
+
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, authUser => {
       setUser(authUser);
+      setLoading(false); // Set loading to false once auth state is resolved
+
     });
+    
 
     return () => unsubscribe();
   }, []);
 
+  // if (loading) {
+  //   // Show a loading spinner or placeholder while checking auth state
+  //   return <div>Loading...</div>;
+  // }
+
   useEffect(() => {
     let tasksRef: any;
     if (user) {
+      setTasksLoading(true); // Start loading tasks
+
       tasksRef = ref(db, `tasks/${user.uid}`);
       onValue(tasksRef, snapshot => {
         const data = snapshot.val();
@@ -83,6 +97,8 @@ export default function Home() {
         } else {
           setTasks([]);
         }
+        setTasksLoading(false); // Stop loading tasks
+
       });
     }
 
@@ -185,8 +201,11 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-background p-4 font-sans">
       <h1 className="text-4xl font-bold text-primary mb-4">TaskMaster</h1>
-
-      {user ? (
+  
+      {loading ? (
+        // Show a loading spinner or placeholder while checking auth state
+        <div>Loading...</div>
+      ) : user ? (
         <>
           <p>Welcome, {user.email}!</p>
           <Button onClick={logout} className="mb-4 bg-secondary text-secondary-foreground">
@@ -196,7 +215,7 @@ export default function Home() {
             <Input
               type="text"
               placeholder="Add a task"
-              className="rounded-l-md flex-grow"
+              className="rounded-l-md flex-grow mr-2"
               value={newTask}
               onChange={e => setNewTask(e.target.value)}
               onKeyDown={e => {
@@ -230,6 +249,11 @@ export default function Home() {
               </CardContent>
             </Card>
           )}
+           {tasksLoading ? (
+            <div>Loading tasks...</div>
+          ) : tasks.length === 0 ? (
+            <div>No tasks!</div>
+          ) : (
           <ul className="w-full max-w-md">
             {tasks.map(task => (
               <li
@@ -262,6 +286,7 @@ export default function Home() {
               </li>
             ))}
           </ul>
+          )}
         </>
       ) : (
         <div className="flex flex-col items-center w-full max-w-md">
@@ -279,7 +304,10 @@ export default function Home() {
             value={password}
             onChange={e => setPassword(e.target.value)}
           />
-          <Button onClick={isRegistering ? register : login} className="mb-2 bg-primary text-primary-foreground rounded-md">
+          <Button
+            onClick={isRegistering ? register : login}
+            className="mb-2 bg-primary text-primary-foreground rounded-md"
+          >
             {isRegistering ? 'Register' : 'Login'}
           </Button>
           <Button
