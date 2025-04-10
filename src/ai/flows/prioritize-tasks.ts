@@ -4,7 +4,7 @@
  *
  * - prioritizeTasks - A function that handles the task prioritization process.
  * - PrioritizeTasksInput - The input type for the prioritizeTasks function.
- * - PrioritizeTasksOutput - The return type for the prioritizeTasks function.
+ * - PrioritizeTasksOutput - The return type for the PrioritizeTasks function.
  */
 
 import {ai} from '@/ai/ai-instance';
