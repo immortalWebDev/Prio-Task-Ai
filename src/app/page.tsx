@@ -25,13 +25,13 @@ import {CheckCircle, Circle, Plus, Trash2, Brain} from 'lucide-react';
 import {prioritizeTasks, PrioritizeTasksOutput} from '@/ai/flows/prioritize-tasks';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCLZ-VIRX2t02Y-3qkGPcwxxke8iv_2rJU',
-  authDomain: 'taskmaster-94jon.firebaseapp.com',
-  projectId: 'taskmaster-94jon',
-  storageBucket: 'taskmaster-94jon.firebasestorage.app',
-  messagingSenderId: '749056696025',
-  appId: '1:749056696025:web:baa62b76b4d1799fb828c8',
-  databaseURL: 'https://taskmaster-94jon-default-rtdb.firebaseio.com/',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
 
 let firebaseApp;
