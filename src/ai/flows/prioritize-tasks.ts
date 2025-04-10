@@ -61,6 +61,7 @@ const prompt = ai.definePrompt({
     }),
   },
   prompt: `You are a task prioritization expert. Given the following list of tasks, prioritize them based on their descriptions. Return the tasks with their original IDs, descriptions, a priority (1 being highest priority), and a short reason for the assigned priority.
+Ensure that the output is valid JSON.
 
 Tasks:
 {{#each tasks}}
@@ -68,6 +69,14 @@ Tasks:
 {{/each}}
 
 Prioritized Tasks:`, // Ensure that the output schema properties are honored
+  validateOutput: (output: any) => {
+    try {
+      PrioritizeTasksOutputSchema.parse(output);
+      return {isValid: true};
+    } catch (e: any) {
+      return {isValid: false, error: e.message};
+    }
+  }
 });
 
 const prioritizeTasksFlow = ai.defineFlow<

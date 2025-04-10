@@ -21,7 +21,8 @@ import {
 import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
 import {Card, CardHeader, CardContent} from '@/components/ui/card';
-import {CheckCircle, Circle, Plus, Trash2} from 'lucide-react';
+import {CheckCircle, Circle, Plus, Trash2, Brain} from 'lucide-react';
+import {prioritizeTasks, PrioritizeTasksOutput} from '@/ai/flows/prioritize-tasks';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCLZ-VIRX2t02Y-3qkGPcwxxke8iv_2rJU',
@@ -56,6 +57,7 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const [user, setUser] = useState<any>(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [aiPrioritizedTasks, setAiPrioritizedTasks] = useState<PrioritizeTasksOutput | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, authUser => {
@@ -159,6 +161,27 @@ export default function Home() {
     }
   };
 
+  const getAiPriority = async () => {
+    if (!user) {
+      alert('Please log in to prioritize tasks.');
+      return;
+    }
+
+    try {
+      const input = {
+        tasks: tasks.map(task => ({
+          id: task.id,
+          description: task.description,
+        })),
+      };
+      const result = await prioritizeTasks(input);
+      setAiPrioritizedTasks(result);
+    } catch (error: any) {
+      console.error('AI Prioritization Error:', error);
+      alert(`AI Prioritization failed: ${error.message}`);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-background p-4 font-sans">
       <h1 className="text-4xl font-bold text-primary mb-4">TaskMaster</h1>
@@ -187,6 +210,26 @@ export default function Home() {
               Add Task
             </Button>
           </div>
+          <Button onClick={getAiPriority} className="mb-4 bg-accent text-accent-foreground">
+            <Brain className="h-4 w-4 mr-2" />
+            Get AI Priority
+          </Button>
+          {aiPrioritizedTasks && (
+            <Card className="w-full max-w-md mb-4">
+              <CardHeader>
+                <h2 className="text-lg font-semibold">AI Prioritized Tasks</h2>
+              </CardHeader>
+              <CardContent>
+                <ul>
+                  {aiPrioritizedTasks.prioritizedTasks.map(task => (
+                    <li key={task.id} className="py-2">
+                      <strong>{task.priority}:</strong> {task.description} - {task.reason}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
           <ul className="w-full max-w-md">
             {tasks.map(task => (
               <li
